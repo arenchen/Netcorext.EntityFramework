@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Netcorext.EntityFramework.UserIdentityPattern/Netcorext.EntityFramework.UserIdentityPattern.csproj" />
+  </ItemGroup>
+
+  <Import Project="../Versioning.targets" />
+
+</Project>
