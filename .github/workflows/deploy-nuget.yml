@@ -23,11 +23,12 @@ jobs:
       - name: Pack
         run: |
           BRANCH="${GITHUB_REF##*/}"
-          COMMINT_SHORT_SHA=`git rev-parse --short ${GITHUB_SHA}`
+          COMMIT_SHORT_SHA=`git rev-parse --short ${GITHUB_SHA}`
+          COMMIT_COUNT=`git rev-list --count HEAD`
           if [ "$BRANCH" = "main" ]; then
             dotnet pack --no-dependencies -c Release
           else
-            dotnet pack --no-dependencies -c Debug --version-suffix ${BRANCH}-${COMMINT_SHORT_SHA}
+            dotnet pack --no-dependencies -c Debug --version-suffix ${BRANCH}.${COMMIT_COUNT}+${COMMIT_SHORT_SHA}
           fi
       - name: Find Package
         run: |
