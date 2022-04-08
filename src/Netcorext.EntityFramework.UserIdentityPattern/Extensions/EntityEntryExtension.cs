@@ -15,11 +15,13 @@ public static class EntityEntryExtension
                 return entry;
         }
 
-        if (entry.Property(propertyExpression).OriginalValue == null && value == null) return entry;
-        if (entry.Property(propertyExpression).OriginalValue != null && entry.Property(propertyExpression).OriginalValue!.Equals(value)) return entry;
+        var propertyName = ((MemberExpression)((UnaryExpression)propertyExpression.Body).Operand).Member.Name;
 
-        entry.Property(propertyExpression).CurrentValue = value;
-        entry.Property(propertyExpression).IsModified = true;
+        if (entry.Property(propertyName).OriginalValue == null && value == null) return entry;
+        if (entry.Property(propertyName).OriginalValue != null && entry.Property(propertyName).OriginalValue!.Equals(value)) return entry;
+
+        entry.Property(propertyName).CurrentValue = value;
+        entry.Property(propertyName).IsModified = true;
 
         onChange?.Invoke(entry.Entity);
 
