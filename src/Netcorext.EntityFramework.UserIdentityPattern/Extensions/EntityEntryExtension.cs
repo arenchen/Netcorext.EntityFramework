@@ -15,7 +15,12 @@ public static class EntityEntryExtension
                 return entry;
         }
 
-        var propertyName = ((MemberExpression)((UnaryExpression)propertyExpression.Body).Operand).Member.Name;
+        var propertyName = propertyExpression.Body switch
+                           {
+                               MemberExpression e => e.Member.Name,
+                               UnaryExpression e => ((MemberExpression)e.Operand).Member.Name,
+                               _ => throw new NotSupportedException(propertyExpression.Body.GetType().Name)
+                           };
 
         if (entry.Property(propertyName).OriginalValue == null && value == null) return entry;
         if (entry.Property(propertyName).OriginalValue != null && entry.Property(propertyName).OriginalValue!.Equals(value)) return entry;
