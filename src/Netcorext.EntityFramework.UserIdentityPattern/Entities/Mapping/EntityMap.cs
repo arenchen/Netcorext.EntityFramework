@@ -5,11 +5,11 @@ namespace Netcorext.EntityFramework.UserIdentityPattern.Entities.Mapping;
 
 public abstract class EntityMap<TEntity> where TEntity : Entity
 {
-    public EntityMap(ModelBuilder modelBuilder)
+    public EntityMap(ModelBuilder modelBuilder, bool isTable = true)
     {
         Builder = modelBuilder.Entity<TEntity>();
 
-        Builder.ToTable(typeof(TEntity).Name);
+        if (isTable) Builder.ToTable(typeof(TEntity).Name);
 
         Builder.HasKey(t => t.Id);
 
