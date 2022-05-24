@@ -4,7 +4,8 @@ namespace Netcorext.EntityFramework.UserIdentityPattern.AspNetCore;
 
 public static class ApplicationBuilderExtension
 {
-    public static bool EnsureCreateUserIdentityPatternDatabase(this IApplicationBuilder builder)
+    public static bool EnsureCreateDatabase<TEntity>(this IApplicationBuilder builder) => EnsureCreateDatabase(builder);
+    public static bool EnsureCreateDatabase(this IApplicationBuilder builder)
     {
         using var serviceScope = builder.ApplicationServices.CreateScope();
 
@@ -12,17 +13,9 @@ public static class ApplicationBuilderExtension
 
         return context.Database.EnsureCreated();
     }
-
-    public static bool EnsureCreateUserIdentityPatternDatabase<TEntity>(this IApplicationBuilder builder)
-    {
-        using var serviceScope = builder.ApplicationServices.CreateScope();
-
-        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
-
-        return context.Database.EnsureCreated();
-    }
-
-    public static bool EnsureDeleteUserIdentityPatternDatabase(this IApplicationBuilder builder)
+    
+    public static bool EnsureDeleteDatabase<TEntity>(this IApplicationBuilder builder) => EnsureDeleteDatabase(builder);
+    public static bool EnsureDeleteDatabase(this IApplicationBuilder builder)
     {
         using var serviceScope = builder.ApplicationServices.CreateScope();
 
@@ -31,16 +24,8 @@ public static class ApplicationBuilderExtension
         return context.Database.EnsureDeleted();
     }
 
-    public static void MigrateUserIdentityPatternDatabase(this IApplicationBuilder builder)
-    {
-        using var serviceScope = builder.ApplicationServices.CreateScope();
-
-        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
-
-        context.Database.Migrate();
-    }
-
-    public static void MigrateUserIdentityPatternDatabase<TEntity>(this IApplicationBuilder builder)
+    public static void MigrateDatabase<TEntity>(this IApplicationBuilder builder) => MigrateDatabase(builder);
+    public static void MigrateDatabase(this IApplicationBuilder builder)
     {
         using var serviceScope = builder.ApplicationServices.CreateScope();
 

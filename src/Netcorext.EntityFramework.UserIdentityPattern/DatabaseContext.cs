@@ -4,10 +4,9 @@ using Netcorext.EntityFramework.UserIdentityPattern.Entities.Mapping;
 
 namespace Netcorext.EntityFramework.UserIdentityPattern;
 
-public class DatabaseContext : DbContext
+public abstract class DatabaseContext : DbContext
 {
-    public DatabaseContext(DbContextOptions options) : base(options)
-    { }
+    protected DatabaseContext(DbContextOptions options) : base(options) { }
 
     public virtual int SaveChanges(Action<Entity>? handlerBase)
     {
@@ -49,9 +48,11 @@ public class DatabaseContext : DbContext
     private IEnumerable<Type> GetEntityMapping()
     {
         var baseType = typeof(EntityMap<>);
+
         var types = AppDomain.CurrentDomain.GetAssemblies()
                              .SelectMany(assembly => assembly.GetTypes())
                              .Where(type => !type.IsGenericType && type.IsClass && type.BaseType != null && type.BaseType.Name == baseType.Name);
+
         return types;
     }
 }

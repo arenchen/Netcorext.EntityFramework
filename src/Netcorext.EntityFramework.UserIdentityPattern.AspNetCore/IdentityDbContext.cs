@@ -1,59 +1,50 @@
-using Castle.DynamicProxy;
 using Microsoft.EntityFrameworkCore;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities;
 
-namespace Netcorext.EntityFramework.UserIdentityPattern.AspNetCore.Internals;
+namespace Netcorext.EntityFramework.UserIdentityPattern;
 
-[Serializable]
-internal class UpdateBaseInfoInterceptor : IInterceptor
+public class IdentityDbContext : DatabaseContext
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UpdateBaseInfoInterceptor(IHttpContextAccessor httpContextAccessor)
+    public IdentityDbContext(IHttpContextAccessor httpContextAccessor, DbContextOptions options) : base(options)
     {
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public void Intercept(IInvocation invocation)
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
-        var mi = invocation.MethodInvocationTarget;
-        var parameters = mi.GetParameters();
-
-        if (typeof(DbContext).IsAssignableFrom(invocation.TargetType)
-         && (mi.Name.Equals(nameof(DatabaseContext.SaveChanges)) || mi.Name.Equals(nameof(DatabaseContext.SaveChangesAsync)))
-         && parameters.FirstOrDefault(t => t.Name.Equals("acceptAllChangesOnSuccess", StringComparison.OrdinalIgnoreCase)) != null)
-        {
-            var dbContext = invocation.InvocationTarget as DbContext;
-            var baseHandler = invocation.Arguments.FirstOrDefault(t => t is Action<Entity>) as Action<Entity>;
-            UpdateBaseInfo(dbContext, baseHandler);
-        }
-
-        invocation.Proceed();
-
-        var isAsync = typeof(Task).IsAssignableFrom(invocation.MethodInvocationTarget.ReturnType);
-
-        if (isAsync)
-        {
-            invocation.ReturnValue = InterceptAsync((dynamic)invocation.ReturnValue);
-        }
+        UpdateBaseInfo();
+        
+        return base.SaveChanges(acceptAllChangesOnSuccess);
     }
 
-    private static async Task InterceptAsync(Task task)
+    public override int SaveChanges(bool acceptAllChangesOnSuccess, Action<Entity>? handlerBase)
     {
-        await task.ConfigureAwait(false);
-        ;
+        UpdateBaseInfo(handlerBase);
+        
+        return base.SaveChanges(acceptAllChangesOnSuccess, handlerBase);
     }
 
-    private static async Task<T> InterceptAsync<T>(Task<T> task)
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
     {
-        return await task.ConfigureAwait(false);
+        UpdateBaseInfo();
+        
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-    private void UpdateBaseInfo(DbContext context, Action<Entity>? handlerBase = null)
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, Action<Entity>? handlerBase, CancellationToken cancellationToken = default)
     {
-        var changedEntities = context.ChangeTracker.Entries<Entity>()
-                                     .Where(entry => entry.State is EntityState.Added or EntityState.Modified)
-                                     .ToList();
+        UpdateBaseInfo(handlerBase);
+        
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, handlerBase, cancellationToken);
+    }
+
+    private void UpdateBaseInfo(Action<Entity>? handlerBase = null)
+    {
+        var changedEntities = ChangeTracker.Entries<Entity>()
+                                           .Where(entry => entry.State is EntityState.Added or EntityState.Modified)
+                                           .ToList();
 
         var userId = GetUserId();
 
