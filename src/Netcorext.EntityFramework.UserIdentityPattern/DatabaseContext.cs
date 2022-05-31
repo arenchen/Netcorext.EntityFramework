@@ -38,21 +38,6 @@ public abstract class DatabaseContext : DbContext
         {
             Activator.CreateInstance(type, modelBuilder);
         }
-
-        var entityTypes = modelBuilder.Model
-                                      .GetEntityTypes()
-                                      .ToArray();
-
-        var fk = entityTypes.SelectMany(e => e.GetForeignKeys())
-                            .OrderBy(k => k.ToString())
-                            .ToArray();
-
-        foreach (var relationship in fk)
-        {
-            var annotation = relationship.FindAnnotation(nameof(DeleteBehavior)) ?? new Annotation(nameof(DeleteBehavior), DeleteBehavior.Restrict);
-            
-            relationship.DeleteBehavior = (DeleteBehavior)annotation.Value!;
-        }
     }
 
     private IEnumerable<Type> GetEntityMapping()
