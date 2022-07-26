@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities.Mapping;
 

@@ -7,7 +7,7 @@ public class IdentityDbContext : DatabaseContext
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public IdentityDbContext(IHttpContextAccessor httpContextAccessor, DbContextOptions options) : base(options)
+    public IdentityDbContext(IHttpContextAccessor httpContextAccessor, DbContextOptions<IdentityDbContext> options) : base(options)
     {
         _httpContextAccessor = httpContextAccessor;
     }
