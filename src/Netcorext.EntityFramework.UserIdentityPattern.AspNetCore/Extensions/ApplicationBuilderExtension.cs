@@ -4,6 +4,16 @@ namespace Netcorext.EntityFramework.UserIdentityPattern.AspNetCore;
 
 public static class ApplicationBuilderExtension
 {
+    public static string GenerateDdl<TEntity>(this IApplicationBuilder builder) => GenerateDdl(builder);
+    public static string GenerateDdl(this IApplicationBuilder builder)
+    {
+        using var serviceScope = builder.ApplicationServices.CreateScope();
+
+        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
+
+        return context.Database.GenerateCreateScript();
+    }
+    
     public static bool EnsureCreateDatabase<TEntity>(this IApplicationBuilder builder) => EnsureCreateDatabase(builder);
     public static bool EnsureCreateDatabase(this IApplicationBuilder builder)
     {
