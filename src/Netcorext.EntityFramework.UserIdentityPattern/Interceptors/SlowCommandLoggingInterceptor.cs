@@ -22,7 +22,7 @@ public class SlowCommandLoggingInterceptor : DbCommandInterceptor
         return base.ReaderExecuted(command, eventData, result);
     }
 
-    public override ValueTask<DbDataReader> ReaderExecutedAsync(DbCommand command, CommandExecutedEventData eventData, DbDataReader result, CancellationToken cancellationToken = new CancellationToken())
+    public override ValueTask<DbDataReader> ReaderExecutedAsync(DbCommand command, CommandExecutedEventData eventData, DbDataReader result, CancellationToken cancellationToken = new())
     {
         LogSlowCommand(command.CommandText, eventData.Duration);
 
@@ -32,28 +32,28 @@ public class SlowCommandLoggingInterceptor : DbCommandInterceptor
     public override object? ScalarExecuted(DbCommand command, CommandExecutedEventData eventData, object? result)
     {
         LogSlowCommand(command.CommandText, eventData.Duration);
-        
+
         return base.ScalarExecuted(command, eventData, result);
     }
 
-    public override ValueTask<object?> ScalarExecutedAsync(DbCommand command, CommandExecutedEventData eventData, object? result, CancellationToken cancellationToken = new CancellationToken())
+    public override ValueTask<object?> ScalarExecutedAsync(DbCommand command, CommandExecutedEventData eventData, object? result, CancellationToken cancellationToken = new())
     {
         LogSlowCommand(command.CommandText, eventData.Duration);
-        
+
         return base.ScalarExecutedAsync(command, eventData, result, cancellationToken);
     }
 
     public override int NonQueryExecuted(DbCommand command, CommandExecutedEventData eventData, int result)
     {
         LogSlowCommand(command.CommandText, eventData.Duration);
-        
+
         return base.NonQueryExecuted(command, eventData, result);
     }
 
-    public override ValueTask<int> NonQueryExecutedAsync(DbCommand command, CommandExecutedEventData eventData, int result, CancellationToken cancellationToken = new CancellationToken())
+    public override ValueTask<int> NonQueryExecutedAsync(DbCommand command, CommandExecutedEventData eventData, int result, CancellationToken cancellationToken = new())
     {
         LogSlowCommand(command.CommandText, eventData.Duration);
-        
+
         return base.NonQueryExecutedAsync(command, eventData, result, cancellationToken);
     }
 
@@ -61,7 +61,7 @@ public class SlowCommandLoggingInterceptor : DbCommandInterceptor
     {
         if (duration.TotalMilliseconds > _slowCommandLoggingThreshold)
         {
-            _logger.LogWarning("Slow command: {CommandText} ({Duration})", commandText, duration);
+            _logger.LogWarning("Slow command ({Duration})\n{CommandText} ()", duration, commandText);
         }
     }
 }
