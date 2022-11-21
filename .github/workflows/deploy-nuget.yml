@@ -12,6 +12,7 @@ on:
         description: 'Force exec'
         type: boolean
         required: true
+        default: false
 
 jobs:
   Detect:
@@ -32,14 +33,16 @@ jobs:
           if [ ! -z "$PROJECT_PATH" ]; then
             APP=`basename "${PROJECT_PATH}" .csproj`
           fi
-
+          
           CHANGE_FILES=`git diff --no-commit-id --name-only HEAD^`
 
-          CHANGED=`echo $"CHANGE_FILES" | grep -Em 1 '.cs|.proto' || true`
-          if [ -z "$CHANGED" ] && [ ! ${{ inputs.force }} ]; then
+          CHANGED=`echo "$CHANGE_FILES" | grep -Em 1 '.cs|.proto' || true`
+          if [ -z "$CHANGED" ] && [ "${{ inputs.force }}" != true ]; then
+            echo "No changes detected"
+          
             APP=""
           fi
-
+          
           echo "app=${APP}" >> $GITHUB_OUTPUT
   Build:
     needs: Detect
