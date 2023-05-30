@@ -1,15 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities;
 
 namespace Netcorext.EntityFramework.UserIdentityPattern;
 
-public class IdentityDbContext : DatabaseContext
+public class IdentityReplicaDbContext<T> : DatabaseContext
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public IdentityDbContext(IHttpContextAccessor httpContextAccessor, DbContextOptions<IdentityDbContext> options) : base(options)
+    public IdentityReplicaDbContext(DbContextOptions<IdentityReplicaDbContext<T>> options) : base(options)
     {
-        _httpContextAccessor = httpContextAccessor;
+        _httpContextAccessor = this.GetService<IHttpContextAccessor>();
     }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)

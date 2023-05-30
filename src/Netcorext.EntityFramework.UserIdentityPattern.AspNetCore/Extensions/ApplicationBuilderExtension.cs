@@ -9,9 +9,9 @@ public static class ApplicationBuilderExtension
     {
         using var serviceScope = builder.ApplicationServices.CreateScope();
 
-        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContextAdapter>();
 
-        return context.Database.GenerateCreateScript();
+        return context.Master.Database.GenerateCreateScript();
     }
     
     public static bool EnsureCreateDatabase<TEntity>(this IApplicationBuilder builder) => EnsureCreateDatabase(builder);
@@ -19,9 +19,9 @@ public static class ApplicationBuilderExtension
     {
         using var serviceScope = builder.ApplicationServices.CreateScope();
 
-        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContextAdapter>();
 
-        return context.Database.EnsureCreated();
+        return context.Master.Database.EnsureCreated();
     }
     
     public static bool EnsureDeleteDatabase<TEntity>(this IApplicationBuilder builder) => EnsureDeleteDatabase(builder);
@@ -29,9 +29,9 @@ public static class ApplicationBuilderExtension
     {
         using var serviceScope = builder.ApplicationServices.CreateScope();
 
-        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContextAdapter>();
 
-        return context.Database.EnsureDeleted();
+        return context.Master.Database.EnsureDeleted();
     }
 
     public static void MigrateDatabase<TEntity>(this IApplicationBuilder builder) => MigrateDatabase(builder);
@@ -39,8 +39,8 @@ public static class ApplicationBuilderExtension
     {
         using var serviceScope = builder.ApplicationServices.CreateScope();
 
-        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        var context = serviceScope.ServiceProvider.GetRequiredService<DatabaseContextAdapter>();
 
-        context.Database.Migrate();
+        context.Master.Database.Migrate();
     }
 }
