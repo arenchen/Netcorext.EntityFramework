@@ -9,13 +9,17 @@ public static class ServiceCollectionExtension
 {
     private const long DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD = 1000;
 
-    public static IServiceCollection AddIdentityDbContext(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD) => AddIdentityDbContext<IdentityReplicaDbContext<MasterContext>>(services, null, lifetime, slowCommandLoggingThreshold);
+    public static IServiceCollection AddIdentityDbContext(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
+        => AddIdentityDbContext<IdentityReplicaDbContext<MasterContext>>(services, null, lifetime, slowCommandLoggingThreshold);
 
-    public static IServiceCollection AddIdentityDbContext(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD) => AddIdentityDbContext<IdentityReplicaDbContext<MasterContext>>(services, optionsAction, lifetime, slowCommandLoggingThreshold);
+    public static IServiceCollection AddIdentityDbContext(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
+        => AddIdentityDbContext<IdentityReplicaDbContext<MasterContext>>(services, optionsAction, lifetime, slowCommandLoggingThreshold);
 
-    public static IServiceCollection AddIdentitySlaveDbContext(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD) => AddIdentityDbContext<IdentityReplicaDbContext<SlaveContext>>(services, null, lifetime, slowCommandLoggingThreshold);
+    public static IServiceCollection AddIdentitySlaveDbContext(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
+        => AddIdentityDbContext<IdentityReplicaDbContext<SlaveContext>>(services, null, lifetime, slowCommandLoggingThreshold);
 
-    public static IServiceCollection AddIdentitySlaveDbContext(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD) => AddIdentityDbContext<IdentityReplicaDbContext<SlaveContext>>(services, optionsAction, lifetime, slowCommandLoggingThreshold);
+    public static IServiceCollection AddIdentitySlaveDbContext(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
+        => AddIdentityDbContext<IdentityReplicaDbContext<SlaveContext>>(services, optionsAction, lifetime, slowCommandLoggingThreshold);
 
     public static IServiceCollection AddIdentityDbContext<TContext>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
             where TContext : DatabaseContext =>
@@ -42,14 +46,17 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddIdentityDbContextPool(this IServiceCollection services, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD) => AddIdentityDbContextPool<IdentityReplicaDbContext<MasterContext>>(services, null, poolSize, slowCommandLoggingThreshold);
+    public static IServiceCollection AddIdentityDbContextPool(this IServiceCollection services, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
+        => AddIdentityDbContextPool<IdentityReplicaDbContext<MasterContext>>(services, null, poolSize, slowCommandLoggingThreshold);
 
-    public static IServiceCollection AddIdentityDbContextPool(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD) => AddIdentityDbContextPool<IdentityReplicaDbContext<MasterContext>>(services, optionsAction, poolSize, slowCommandLoggingThreshold);
+    public static IServiceCollection AddIdentityDbContextPool(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
+        => AddIdentityDbContextPool<IdentityReplicaDbContext<MasterContext>>(services, optionsAction, poolSize, slowCommandLoggingThreshold);
+    
+    public static IServiceCollection AddIdentitySlaveDbContextPool(this IServiceCollection services, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
+        => AddIdentityDbContextPool<IdentityReplicaDbContext<SlaveContext>>(services, null, poolSize, slowCommandLoggingThreshold);
 
-
-    public static IServiceCollection AddIdentitySlaveDbContextPool(this IServiceCollection services, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD) => AddIdentityDbContextPool<IdentityReplicaDbContext<SlaveContext>>(services, null, poolSize, slowCommandLoggingThreshold);
-
-    public static IServiceCollection AddIdentitySlaveDbContextPool(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD) => AddIdentityDbContextPool<IdentityReplicaDbContext<SlaveContext>>(services, optionsAction, poolSize, slowCommandLoggingThreshold);
+    public static IServiceCollection AddIdentitySlaveDbContextPool(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
+        => AddIdentityDbContextPool<IdentityReplicaDbContext<SlaveContext>>(services, optionsAction, poolSize, slowCommandLoggingThreshold);
 
     public static IServiceCollection AddIdentityDbContextPool<TContext>(this IServiceCollection services, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
             where TContext : DatabaseContext =>
@@ -70,7 +77,7 @@ public static class ServiceCollectionExtension
 #pragma warning disable EF1001
         services.AddScoped<DatabaseContext>(provider => provider.GetRequiredService<IScopedDbContextLease<TContext>>().Context);
 
-        services.TryAdd(new ServiceDescriptor(typeof(DatabaseContextAdapter), typeof(DatabaseContextAdapter), ServiceLifetime.Transient));
+        services.TryAdd(new ServiceDescriptor(typeof(DatabaseContextAdapter), typeof(DatabaseContextAdapter), ServiceLifetime.Scoped));
 
         return services;
     }
