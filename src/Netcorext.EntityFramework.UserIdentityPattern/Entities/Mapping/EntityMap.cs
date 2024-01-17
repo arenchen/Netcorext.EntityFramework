@@ -30,6 +30,10 @@ public abstract class EntityMap<TEntity> where TEntity : Entity
         Builder.Property(t => t.ModifierId)
                .HasColumnName(nameof(Entity.ModifierId));
 
+        Builder.Property(t => t.RequestId)
+               .HasColumnName(nameof(Entity.RequestId))
+               .HasMaxLength(200);
+
         Builder.Property(t => t.Version)
                .HasColumnName(nameof(Entity.Version));
     }

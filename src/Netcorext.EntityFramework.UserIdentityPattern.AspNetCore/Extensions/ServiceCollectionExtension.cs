@@ -22,11 +22,11 @@ public static class ServiceCollectionExtension
         => AddIdentityDbContext<IdentityReplicaDbContext<SlaveContext>>(services, optionsAction, lifetime, slowCommandLoggingThreshold);
 
     public static IServiceCollection AddIdentityDbContext<TContext>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
-            where TContext : DatabaseContext =>
-            AddIdentityDbContext<TContext>(services, null, lifetime, slowCommandLoggingThreshold);
+        where TContext : DatabaseContext =>
+        AddIdentityDbContext<TContext>(services, null, lifetime, slowCommandLoggingThreshold);
 
     public static IServiceCollection AddIdentityDbContext<TContext>(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
-            where TContext : DatabaseContext
+        where TContext : DatabaseContext
     {
         services.AddHttpContextAccessor();
 
@@ -51,7 +51,7 @@ public static class ServiceCollectionExtension
 
     public static IServiceCollection AddIdentityDbContextPool(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
         => AddIdentityDbContextPool<IdentityReplicaDbContext<MasterContext>>(services, optionsAction, poolSize, slowCommandLoggingThreshold);
-    
+
     public static IServiceCollection AddIdentitySlaveDbContextPool(this IServiceCollection services, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
         => AddIdentityDbContextPool<IdentityReplicaDbContext<SlaveContext>>(services, null, poolSize, slowCommandLoggingThreshold);
 
@@ -59,11 +59,11 @@ public static class ServiceCollectionExtension
         => AddIdentityDbContextPool<IdentityReplicaDbContext<SlaveContext>>(services, optionsAction, poolSize, slowCommandLoggingThreshold);
 
     public static IServiceCollection AddIdentityDbContextPool<TContext>(this IServiceCollection services, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
-            where TContext : DatabaseContext =>
-            AddIdentityDbContextPool<TContext>(services, null, poolSize, slowCommandLoggingThreshold);
+        where TContext : DatabaseContext =>
+        AddIdentityDbContextPool<TContext>(services, null, poolSize, slowCommandLoggingThreshold);
 
     public static IServiceCollection AddIdentityDbContextPool<TContext>(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
-            where TContext : DatabaseContext
+        where TContext : DatabaseContext
     {
         services.AddHttpContextAccessor();
 

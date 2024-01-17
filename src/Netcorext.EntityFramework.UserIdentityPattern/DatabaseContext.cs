@@ -1,6 +1,7 @@
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities.Mapping;
 
@@ -8,7 +9,7 @@ namespace Netcorext.EntityFramework.UserIdentityPattern;
 
 public abstract class DatabaseContext : DbContext
 {
-    protected DatabaseContext(DbContextOptions options) : base(TrimSlave(options))
+    protected DatabaseContext(DbContextOptions options) : base(TrimDbContextOptions(options))
     {
         if (options.Extensions
                    .FirstOrDefault(t => t.GetType()
@@ -20,20 +21,21 @@ public abstract class DatabaseContext : DbContext
                         ConnectionString = ext.ConnectionString
                     };
 
-        if (!build.TryGetValue("slave", out var slave))
-            return;
+        if (build.TryGetValue("slave", out var slave))
+            build.Remove("slave");
 
-        build.Remove("slave");
-        
-        var isSlave = slave.ToString()?.ToUpper();
+        if (build.TryGetValue("requestId", out var requestId))
+            build.Remove("requestId");
 
-        if (string.IsNullOrWhiteSpace(isSlave) || isSlave == "0" || isSlave == "N" || isSlave == "NO" || isSlave == bool.FalseString.ToUpper())
-            return;
-        
-        IsSlave = true;
+        var isSlave = slave?.ToString()?.ToUpper();
+        var enableRequestId = requestId?.ToString()?.ToUpper();
+
+        IsSlave = !string.IsNullOrWhiteSpace(isSlave) && (isSlave == "1" || isSlave == "Y" || isSlave == "YES" || isSlave == bool.TrueString.ToUpper());
+        EnableRequestId = !string.IsNullOrWhiteSpace(enableRequestId) && (enableRequestId == "1" || enableRequestId == "Y" || enableRequestId == "YES" || enableRequestId == bool.TrueString.ToUpper());
     }
 
     public bool IsSlave { get; }
+    public bool EnableRequestId { get; set; }
 
     public virtual int SaveChanges(Action<Entity>? handlerBase)
     {
@@ -61,7 +63,23 @@ public abstract class DatabaseContext : DbContext
 
         foreach (var type in types)
         {
-            Activator.CreateInstance(type, modelBuilder);
+            var map = Activator.CreateInstance(type, modelBuilder);
+
+            if (map == null)
+                continue;
+
+            var property = type.GetProperty("Builder");
+
+            if (property == null)
+                continue;
+
+            var builder = property.GetValue(map) as EntityTypeBuilder;
+
+            if (builder == null)
+                continue;
+
+            if (!EnableRequestId)
+                builder.Ignore(nameof(Entity.RequestId));
         }
     }
 
@@ -75,8 +93,8 @@ public abstract class DatabaseContext : DbContext
 
         return types;
     }
-    
-    private static DbContextOptions TrimSlave(DbContextOptions options)
+
+    private static DbContextOptions TrimDbContextOptions(DbContextOptions options)
     {
         if (options.Extensions
                    .FirstOrDefault(t => t.GetType()
@@ -88,19 +106,15 @@ public abstract class DatabaseContext : DbContext
                         ConnectionString = ext.ConnectionString
                     };
 
-        if (!build.TryGetValue("slave", out var slave))
-            return options;
+        if (build.TryGetValue("slave", out var slave))
+            build.Remove("slave");
 
-        build.Remove("slave");
-        
-        var isSlave = slave.ToString()?.ToUpper();
+        if (build.TryGetValue("requestId", out var requestId))
+            build.Remove("requestId");
 
         ext = ext.WithConnectionString(build.ConnectionString);
 
         options = options.WithExtension(ext);
-
-        if (string.IsNullOrWhiteSpace(isSlave) || isSlave == "0" || isSlave == "N" || isSlave == "NO" || isSlave == bool.FalseString.ToUpper())
-            return options;
 
         return options;
     }

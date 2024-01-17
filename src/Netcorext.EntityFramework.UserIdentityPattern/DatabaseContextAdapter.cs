@@ -2,15 +2,16 @@ namespace Netcorext.EntityFramework.UserIdentityPattern;
 
 public class DatabaseContextAdapter
 {
+    private readonly IEnumerable<DatabaseContext> _contexts;
+
     public DatabaseContextAdapter(IEnumerable<DatabaseContext> contexts)
     {
-        var databaseContexts = contexts.ToArray();
-        Master = databaseContexts.First(c => !c.IsSlave);
-        Slave = databaseContexts.FirstOrDefault(c => c.IsSlave) ?? Master;
+        _contexts = contexts;
+
     }
 
     public static implicit operator DatabaseContext(DatabaseContextAdapter adapter) => adapter.Master;
 
-    public DatabaseContext Master { get; set; }
-    public DatabaseContext Slave { get; set; }
+    public DatabaseContext Master => _contexts.First(c => !c.IsSlave);
+    public DatabaseContext Slave => _contexts.FirstOrDefault(c => c.IsSlave) ?? Master;
 }
