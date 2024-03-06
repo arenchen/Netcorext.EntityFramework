@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities.Mapping;
+using Netcorext.EntityFramework.UserIdentityPattern.Helpers;
 
 namespace Netcorext.EntityFramework.UserIdentityPattern;
 
@@ -16,22 +17,10 @@ public abstract class DatabaseContext : DbContext
                                          .IsAssignableTo(typeof(RelationalOptionsExtension))) is not RelationalOptionsExtension ext)
             return;
 
-        var build = new DbConnectionStringBuilder
-                    {
-                        ConnectionString = ext.ConnectionString
-                    };
+        var (isSlave, enableRequestId, _) = DbOptionsHelper.GetConnectionInfo(ext.ConnectionString);
 
-        if (build.TryGetValue("slave", out var slave))
-            build.Remove("slave");
-
-        if (build.TryGetValue("requestId", out var requestId))
-            build.Remove("requestId");
-
-        var isSlave = slave?.ToString()?.ToUpper();
-        var enableRequestId = requestId?.ToString()?.ToUpper();
-
-        IsSlave = !string.IsNullOrWhiteSpace(isSlave) && (isSlave == "1" || isSlave == "Y" || isSlave == "YES" || isSlave == bool.TrueString.ToUpper());
-        EnableRequestId = !string.IsNullOrWhiteSpace(enableRequestId) && (enableRequestId == "1" || enableRequestId == "Y" || enableRequestId == "YES" || enableRequestId == bool.TrueString.ToUpper());
+        IsSlave = isSlave;
+        EnableRequestId = enableRequestId;
     }
 
     public bool IsSlave { get; }
@@ -101,18 +90,9 @@ public abstract class DatabaseContext : DbContext
                                          .IsAssignableTo(typeof(RelationalOptionsExtension))) is not RelationalOptionsExtension ext)
             return options;
 
-        var build = new DbConnectionStringBuilder
-                    {
-                        ConnectionString = ext.ConnectionString
-                    };
+        var connectionString = DbOptionsHelper.GetConnectionString(ext.ConnectionString);
 
-        if (build.TryGetValue("slave", out var slave))
-            build.Remove("slave");
-
-        if (build.TryGetValue("requestId", out var requestId))
-            build.Remove("requestId");
-
-        ext = ext.WithConnectionString(build.ConnectionString);
+        ext = ext.WithConnectionString(connectionString);
 
         options = options.WithExtension(ext);
 
