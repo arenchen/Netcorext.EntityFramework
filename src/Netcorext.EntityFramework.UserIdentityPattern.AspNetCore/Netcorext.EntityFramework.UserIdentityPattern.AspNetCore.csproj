@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Netcorext.Extensions.AspNetCore" Version="1.0.1-dev.*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../Netcorext.EntityFramework.UserIdentityPattern/Netcorext.EntityFramework.UserIdentityPattern.csproj" />
   </ItemGroup>
 

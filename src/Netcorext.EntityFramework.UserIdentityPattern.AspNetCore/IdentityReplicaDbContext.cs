@@ -1,15 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Netcorext.Contracts;
 using Netcorext.EntityFramework.UserIdentityPattern.Entities;
 
 namespace Netcorext.EntityFramework.UserIdentityPattern;
 
 public class IdentityReplicaDbContext<T> : DatabaseContext
 {
+    private readonly IContextState _contextState;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public IdentityReplicaDbContext(DbContextOptions<IdentityReplicaDbContext<T>> options) : base(options)
     {
+        _contextState = this.GetService<IContextState>();
         _httpContextAccessor = this.GetService<IHttpContextAccessor>();
     }
 
@@ -89,7 +92,7 @@ public class IdentityReplicaDbContext<T> : DatabaseContext
 
     private long GetUserId()
     {
-        return long.TryParse(_httpContextAccessor.HttpContext?.User.Identity?.Name ?? "0", out var userId)
+        return long.TryParse(_contextState.User?.Identity?.Name ?? "0", out var userId)
                    ? userId
                    : 0;
     }

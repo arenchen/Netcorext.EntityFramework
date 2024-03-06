@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Netcorext.Contracts;
 using Netcorext.EntityFramework.UserIdentityPattern.Interceptors;
 
 namespace Netcorext.EntityFramework.UserIdentityPattern.AspNetCore;
@@ -28,7 +29,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddIdentityDbContext<TContext>(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, ServiceLifetime lifetime = ServiceLifetime.Scoped, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
         where TContext : DatabaseContext
     {
-        services.AddHttpContextAccessor();
+        services.AddContextState();
 
         services.AddDbContext<TContext>((provider, builder) =>
                                         {
@@ -65,7 +66,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddIdentityDbContextPool<TContext>(this IServiceCollection services, Action<IServiceProvider, DbContextOptionsBuilder>? optionsAction, int poolSize = 1024, long slowCommandLoggingThreshold = DEFAULT_SLOW_COMMAND_LOGGING_THRESHOLD)
         where TContext : DatabaseContext
     {
-        services.AddHttpContextAccessor();
+        services.AddContextState();
 
         services.AddDbContextPool<TContext>((provider, builder) =>
                                             {
