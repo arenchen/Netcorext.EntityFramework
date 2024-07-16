@@ -5,13 +5,12 @@ namespace Netcorext.EntityFramework.UserIdentityPattern.Extensions;
 
 public static class EntityEntryExtension
 {
-    public static EntityEntry<TEntity> UpdateProperty<TEntity, TProperty>(this EntityEntry<TEntity> entry, Expression<Func<TEntity, TProperty>> propertyExpression, TProperty value, bool ignoreEmptyValue = true, Action<TEntity>? onChange = null)
+    public static EntityEntry<TEntity> UpdateProperty<TEntity, TProperty>(this EntityEntry<TEntity> entry, Expression<Func<TEntity, TProperty>> propertyExpression, TProperty value, bool ignoreNull = true, Action<TEntity>? onChange = null)
         where TEntity : class
     {
-        switch (ignoreEmptyValue)
+        switch (ignoreNull)
         {
             case true when value == null:
-            case true when typeof(TProperty) == typeof(string) && string.IsNullOrWhiteSpace("" + value):
                 return entry;
         }
 
